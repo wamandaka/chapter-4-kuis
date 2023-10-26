@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id Int @id @default(autoincrement())
+  name String
+  email String
+  password String
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime
+  profile Profiles[]
+  transaction Transactions[]
+}
+
+model Profiles {
+  id Int @id @default(autoincrement())
+  user_id Int
+  birth DateTime
+  address String
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime
+  user Users @relation(fields: [user_id], references: [id])
+}
+
+model Handphone_Brand {
+  id Int @id @default(autoincrement())
+  name String
+  country_origin String
+  since DateTime
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime
+  hp_type Handphone_Type[]
+}
+
+model Handphone_Type {
+  id Int @id @default(autoincrement())
+  brand_id Int
+  name String
+  price BigInt
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime
+  hp_brand Handphone_Brand @relation(fields: [brand_id], references: [id])
+  transaction Transactions[]
+}
+
+model Transactions {
+  id Int @id @default(autoincrement())
+  user_id Int
+  handphone_type Int
+  amount BigInt
+  promo_code String
+  is_paid Boolean
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime
+  user Users @relation(fields: [user_id], references: [id])
+  hp_type Handphone_Type @relation(fields: [handphone_type], references: [id])
+  voucher Promo_voucher @relation(fields: [promo_code], references: [code])
+}
+
+model Promo_voucher {
+  id Int @id @default(autoincrement())
+  code String @unique
+  discount_amount BigInt
+  created_at DateTime
+  updated_at DateTime
+  deleted_at DateTime
+  transaction Transactions[]
+}
